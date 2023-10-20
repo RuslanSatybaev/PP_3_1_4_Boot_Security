@@ -1,23 +1,27 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
+
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
     private final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
-    @Lazy
-    public AdminController(UserService userService) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping
@@ -29,6 +33,7 @@ public class AdminController {
     @GetMapping("/new")
     public String addNewUser(Model model) {
         model.addAttribute("newUser", new User());
+        model.addAttribute("allRoles", roleService.getAll());
         return "add-new-user";
     }
 
@@ -41,6 +46,7 @@ public class AdminController {
     @GetMapping("/edit")
     public String edit(@RequestParam("id") long id, Model model) {
         model.addAttribute("user", userService.getUser(id));
+        model.addAttribute("allRoles", roleService.getAll());
         return "edit";
     }
 

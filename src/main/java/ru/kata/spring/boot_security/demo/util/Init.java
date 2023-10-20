@@ -33,11 +33,10 @@ public class Init {
         Set<Role> userRole = new HashSet<>();
         Set<Role> allRoles = new HashSet<>();
 
-        adminRole.add(roleService.findRoleByName("ROLE_ADMIN"));
-        userRole.add(roleService.findRoleByName("ROLE_USER"));
-        userRole.add(roleService.findRoleByName("ROLE_MANAGER"));
-        allRoles.add(roleService.findRoleByName("ROLE_USER"));
-        allRoles.add(roleService.findRoleByName("ROLE_ADMIN"));
+        adminRole.add(roleService.findByRoleName("ROLE_ADMIN"));
+        userRole.add(roleService.findByRoleName("ROLE_USER"));
+        allRoles.add(roleService.findByRoleName("ROLE_USER"));
+        allRoles.add(roleService.findByRoleName("ROLE_MANAGER"));
 
         userService.saveUser(new User("admin", 32, "admin", adminRole));
         userService.saveUser(new User("user", 28, "user", userRole));

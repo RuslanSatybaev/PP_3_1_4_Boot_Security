@@ -1,17 +1,20 @@
 package ru.kata.spring.boot_security.demo.service;
 
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,17 +43,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsers() {
-        Set<User> users = new HashSet<>(repository.findAll());
-        return new ArrayList<>(users);
+        return repository.findAll().stream().distinct().collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public void updateUser(long id, User user) {
-        User updateUser = repository.findById(id).orElse(null);
-        assert updateUser != null;
+        User updateUser = getUser(id);
         updateUser.setUsername(user.getUsername());
         updateUser.setAge(user.getAge());
+        updateUser.setRoleList(user.getRoleList());
         repository.save(updateUser);
     }
 
@@ -62,9 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User byUsername = repository.findByUsername(username);
-        Hibernate.initialize(byUsername.getPassword());
-        Optional<User> user = Optional.of(byUsername);
-        return user.orElseThrow(() -> new UsernameNotFoundException("User not found - " + username));
+        return Optional.ofNullable(repository.findByUsername(username))
+                .orElseThrow(() -> new UsernameNotFoundException("User not found - " + username));
     }
 }
