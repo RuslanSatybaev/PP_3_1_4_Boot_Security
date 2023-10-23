@@ -4,12 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
-
-import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
@@ -27,14 +24,15 @@ public class AdminController {
     @GetMapping
     public String showAllUsers(Model model) {
         model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("userRegis", userService.registration());
+        model.addAttribute("allRoles", roleService.getAll());
         return "users";
     }
 
     @GetMapping("/new")
     public String addNewUser(Model model) {
         model.addAttribute("newUser", new User());
-        model.addAttribute("allRoles", roleService.getAll());
-        return "add-new-user";
+        return "redirect:/admin";
     }
 
     @PostMapping("/saveUser")
@@ -47,17 +45,17 @@ public class AdminController {
     public String edit(@RequestParam("id") long id, Model model) {
         model.addAttribute("user", userService.getUser(id));
         model.addAttribute("allRoles", roleService.getAll());
-        return "edit";
+        return "redirect:/admin";
     }
 
-    @PatchMapping("/updateUser")
-    public String updateUser(@ModelAttribute("newUser") User user, @RequestParam("id") long id) {
+    @PatchMapping("/updateUser/{id}")
+    public String updateUser(@ModelAttribute("newUser") User user, @PathVariable("id") long id) {
         userService.updateUser(id, user);
         return "redirect:/admin";
     }
 
-    @DeleteMapping("/deleteUser")
-    public String deleteUser(@RequestParam("id") long id) {
+    @DeleteMapping("/deleteUser/{id}")
+    public String deleteUser(@PathVariable("id") long id) {
         userService.deleteUser(id);
         return "redirect:/admin";
     }

@@ -38,8 +38,8 @@ public class Init {
         allRoles.add(roleService.findByRoleName("ROLE_USER"));
         allRoles.add(roleService.findByRoleName("ROLE_MANAGER"));
 
-        userService.saveUser(new User("admin", 32, "admin", adminRole));
-        userService.saveUser(new User("user", 28, "user", userRole));
-        userService.saveUser(new User("Mike", 50, "testPass", allRoles));
+        userService.saveUser(new User("admin","admin", 32,"admin@mail.ru", "admin", adminRole));
+        userService.saveUser(new User("user", "user", 28, "user@mail.ru", "user", userRole));
+        userService.saveUser(new User("Mike", "Mike", 50, "mike@mail.ru", "testPass", allRoles));
     }
 }

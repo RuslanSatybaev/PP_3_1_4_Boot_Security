@@ -1,19 +1,18 @@
 package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +26,12 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.repository = repository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
+    @Override
+    public User registration() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (User) authentication.getPrincipal();
     }
 
     @Override
@@ -50,8 +55,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateUser(long id, User user) {
         User updateUser = getUser(id);
-        updateUser.setUsername(user.getUsername());
+        updateUser.setFirstName(user.getFirstName());
+        updateUser.setLastName(user.getLastName());
         updateUser.setAge(user.getAge());
+        updateUser.setEmail(user.getEmail());
         updateUser.setRoleList(user.getRoleList());
         repository.save(updateUser);
     }
@@ -64,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return Optional.ofNullable(repository.findByUsername(username))
+        return Optional.ofNullable(repository.findByEmail(username))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found - " + username));
     }
 }

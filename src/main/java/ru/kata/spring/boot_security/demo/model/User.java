@@ -4,6 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -22,12 +23,22 @@ public class User implements UserDetails {
 
     @NotEmpty(message = "Имя не должно быть пустым")
     @Size(min = 2, max = 100, message = "Имя должно быть от 2 до 100 символов длиной")
-    @Column(name = "username", unique = true)
-    private String username;
+    @Column(name = "first_name", unique = true)
+    private String firstName;
+
+    @NotEmpty(message = "Фамилия не должно быть пустым")
+    @Size(min = 2, max = 100, message = "Имя должно быть от 2 до 100 символов длиной")
+    @Column(name = "last_name")
+    private String lastName;
+
 
     @Min(value = 12, message = "Возраст должен быть больше 12 лет")
     @Column(name = "age")
     private int age;
+
+    @Email
+    @Column(name = "email", unique = true)
+    private String email;
 
     @Column(name = "password")
     private String password;
@@ -43,9 +54,11 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String username, int age, String password, Set<Role> roleList) {
-        this.username = username;
+    public User(String firstName, String lastName, int age, String email, String password, Set<Role> roleList) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.age = age;
+        this.email = email;
         this.password = password;
         this.roleList = roleList;
     }
@@ -74,6 +87,30 @@ public class User implements UserDetails {
         this.roleList = roleList;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -83,19 +120,19 @@ public class User implements UserDetails {
             return false;
         }
         User user = (User) o;
-        return id == user.id && age == user.age && Objects.equals(username, user.username);
+        return id == user.id && age == user.age && Objects.equals(firstName, user.firstName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, age);
+        return Objects.hash(id, firstName, age);
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
+                ", username='" + firstName + '\'' +
                 ", age=" + age +
                 ", password='" + password + '\'' +
                 ", roleList=" + roleList +
@@ -112,17 +149,13 @@ public class User implements UserDetails {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override

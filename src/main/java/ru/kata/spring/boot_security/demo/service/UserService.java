@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService {
 
+    User registration();
+
     void saveUser(User user);
 
     User getUser(long id);
