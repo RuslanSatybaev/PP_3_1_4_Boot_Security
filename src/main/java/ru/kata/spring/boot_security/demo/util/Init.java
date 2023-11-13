@@ -34,7 +34,9 @@ public class Init {
         Set<Role> allRoles = new HashSet<>();
 
         adminRole.add(roleService.findByRoleName("ROLE_ADMIN"));
+
         userRole.add(roleService.findByRoleName("ROLE_USER"));
+
         allRoles.add(roleService.findByRoleName("ROLE_USER"));
         allRoles.add(roleService.findByRoleName("ROLE_MANAGER"));
 
