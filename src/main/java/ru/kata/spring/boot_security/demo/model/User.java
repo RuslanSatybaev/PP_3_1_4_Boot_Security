@@ -8,9 +8,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -27,7 +26,7 @@ public class User implements UserDetails {
     private String firstName;
 
     @NotEmpty(message = "Фамилия не должно быть пустым")
-    @Size(min = 2, max = 100, message = "Имя должно быть от 2 до 100 символов длиной")
+    @Size(min = 2, max = 100, message = "Фамилия должно быть от 2 до 100 символов длиной")
     @Column(name = "last_name")
     private String lastName;
 
@@ -43,7 +42,7 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_role_list",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -139,6 +138,12 @@ public class User implements UserDetails {
                 '}';
     }
 
+    public String getRolesToString() {
+        List<Role> list = new ArrayList<>(getRoleList());
+        return list.stream().map(role -> role.getRoleName()
+                .replace("ROLE_", "") + " ").collect(Collectors.joining());
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoleList();
@@ -149,13 +154,13 @@ public class User implements UserDetails {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public String getUsername() {
         return email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     @Override

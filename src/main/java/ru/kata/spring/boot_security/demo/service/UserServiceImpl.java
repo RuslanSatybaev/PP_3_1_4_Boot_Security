@@ -8,11 +8,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,11 +23,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final RoleServiceImpl roleService;
 
     @Autowired
-    public UserServiceImpl(UserRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserRepository repository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleServiceImpl roleService) {
         this.repository = repository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.roleService = roleService;
     }
 
     @Override
@@ -54,13 +58,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUser(long id, User user) {
-        User updateUser = getUser(id);
-        updateUser.setFirstName(user.getFirstName());
-        updateUser.setLastName(user.getLastName());
-        updateUser.setAge(user.getAge());
-        updateUser.setEmail(user.getEmail());
-        updateUser.setRoleList(user.getRoleList());
-        repository.save(updateUser);
+        Set<Role> roleSet = user.getRoleList();
+
+        user.setId(id);
+        user.setFirstName(user.getFirstName());
+        user.setLastName(user.getLastName());
+        user.setAge(user.getAge());
+        user.setEmail(user.getEmail());
+        roleSet.forEach(role -> {
+            Role byRoleName = roleService.findByRoleName(role.getRoleName());
+            role.setId(byRoleName.getId());
+        });
+        user.setRoleList(roleSet);
+        repository.save(user);
     }
 
     @Override
