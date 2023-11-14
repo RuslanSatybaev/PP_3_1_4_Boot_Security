@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registration() {
+    public User authorization() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal();
     }
@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUser(long id) {
+    public User getUser(Long id) {
         return repository.findById(id).orElseThrow(() -> new UsernameNotFoundException("id not found - " + id));
     }
 
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(long id, User user) {
+    public void updateUser(Long id, User user) {
         Set<Role> roleSet = user.getRoleList();
 
         user.setId(id);
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(long id) {
+    public void deleteUser(Long id) {
         repository.deleteById(id);
     }
 

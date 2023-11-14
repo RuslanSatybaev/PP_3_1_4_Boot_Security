@@ -14,7 +14,6 @@ import ru.kata.spring.boot_security.demo.util.UserErrorResponse;
 import ru.kata.spring.boot_security.demo.util.exceptions.UserCreateException;
 
 import javax.validation.Valid;
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,13 +42,13 @@ public class AdminController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable("id") long id) {
+    public User getUserById(@PathVariable("id") Long id) {
         return userService.getUser(id);
     }
 
     @GetMapping("/rgs")
     public User showRegisUsers() {
-        return userService.registration();
+        return userService.authorization();
     }
 
     @PostMapping
@@ -68,7 +67,7 @@ public class AdminController {
     }
 
     @DeleteMapping("deleteUser/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteUser(@PathVariable("id") Long id) {
         userService.getUser(id);
         userService.deleteUser(id);
         return ResponseEntity.ok("User with id: " + id + " delete successfully!");
@@ -76,7 +75,7 @@ public class AdminController {
 
     @PatchMapping("updateUser/{id}")
     public ResponseEntity<String> updateUser(@RequestBody @Valid User user,
-                                             @PathVariable("id") long id) {
+                                             @PathVariable("id") Long id) {
         userService.updateUser(id, user);
         return ResponseEntity.ok("User with id: " + id + " update successfully!");
     }
